@@ -1,0 +1,13 @@
+{
+  "imports": {
+    "http": "https://deno.land/std@0.168.0/http/server.ts",
+    "openai-agent": "https://esm.sh/@openai/agents@0.1.9",
+    "zod": "https://deno.land/x/zod@v3.25/mod.ts",
+    "zod-helper": "https://esm.sh/openai@5.23.2/helpers/zod",
+    "@langchain/community": "npm:@langchain/community@^0.0.57/",
+    "@langchain/core": "npm:@langchain/core@^0.2.19/",
+    "@langchain/core/prompts": "npm:@langchain/core@^0.2.19/prompts",
+    "@langchain/openai": "npm:@langchain/openai@^0.0.32/"
+
+  }
+}
