@@ -3,7 +3,20 @@ import {
   RealtimeAgent,
   RealtimeSession,
   OpenAIRealtimeWebRTC,
+  tool
 } from "@openai/agents/realtime";
+import { fileSearchTool } from "@openai/agents";
+import systemprompt from "./systemprompt";
+import { z } from "zod";
+
+const answerDetector = tool({
+  name: 'answer_detector',
+  description: 'After asking question wait for the user answer, then Validate the answer and mark it out of 10',
+  parameters: z.object({ question: z.string(), user_answered: z.string(), actual_answer: z.string(), mark: z.number() }),
+  async execute({ question, user_answered, actual_answer, mark }) {
+    console.log({ question, user_answered, actual_answer, mark });
+  },
+});
 
 function VoiceAgent() {
   const [input, setInput] = useState("");
@@ -49,7 +62,7 @@ function VoiceAgent() {
 
     const { value: empheral_key } = await response.json();
 
-    const agent = new RealtimeAgent({ name: "My agent", tools: [] });
+    const agent = new RealtimeAgent({ name: "My agent", instructions: systemprompt, tools : [answerDetector] });
     const transport = new OpenAIRealtimeWebRTC({
       mediaStream: await navigator.mediaDevices.getUserMedia({ audio: true }),
       audioElement: document.createElement("audio"),
