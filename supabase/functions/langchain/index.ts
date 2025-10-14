@@ -6,16 +6,7 @@ import { zodResponseFormat } from "zod-helper";
 import { ChatOpenAI } from "@langchain/openai";
 import {ChatPromptTemplate} from "@langchain/core/prompts";
 
-// const OutputType = z.object({
-//   name: z.string(),
-//   age: z.number()
-// });
-// const agent = new Agent({
-//   name: 'Assistant',
-//   instructions: 'You are Masud. A helpful Assistant.',
-//   outputType: OutputType,
-//   model: 'gpt-4.1-nano'
-// });
+
 
 const model = new ChatOpenAI({
   model: "gpt-4.1-nano",

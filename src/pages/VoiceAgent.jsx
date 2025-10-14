@@ -49,7 +49,7 @@ function VoiceAgent() {
 
     const { value: empheral_key } = await response.json();
 
-    const agent = new RealtimeAgent({ name: "My agent" });
+    const agent = new RealtimeAgent({ name: "My agent", tools: [] });
     const transport = new OpenAIRealtimeWebRTC({
       mediaStream: await navigator.mediaDevices.getUserMedia({ audio: true }),
       audioElement: document.createElement("audio"),
