@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.19.0",
+    "@heygen/streaming-avatar": "^2.1.0",
     "@supabase/supabase-js": "^2.75.0",
+    "livekit-client": "^2.15.11",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"

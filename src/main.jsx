@@ -5,6 +5,7 @@ import App from './App.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import VoiceAgent from './pages/VoiceAgent.jsx'
 import ChatChannel from './pages/ChatChannel.jsx'
+import InteractiveAvatar from './pages/InteractiveAvatar.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
     <Route index element={<App />} />
     <Route path="/voice" element={<VoiceAgent />} />
     <Route path="/chat" element={<ChatChannel />} />
+    <Route path="/interactive-avatar" element={<InteractiveAvatar />} />
   </Routes>
    </BrowserRouter>
   </StrictMode>,

@@ -16,6 +16,12 @@ const App = () => {
       >
         💬 Chat Channel
       </button>
+      <button
+        onClick={() => window.location.href = '/interactive-avatar'}
+        className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg shadow-lg hover:scale-105 transition-transform font-bold text-lg"
+      >
+        🙎🏻‍♀️ Interactive Avatar
+      </button>
     </div>
   );
 };
