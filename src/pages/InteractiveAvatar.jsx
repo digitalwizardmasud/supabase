@@ -4,16 +4,13 @@ import StreamingAvatar, {
   TaskType,
 } from "@heygen/streaming-avatar";
 import React, { useEffect, useRef, useState } from "react";
-import useAutoVoiceRecorder from "../utils/autoVoiceRecorder";
 import autoVoiceRecorder from "../utils/voice";
 const InteractiveAvatar = () => {
   const [sessionId, setSessionId] = useState(null);
   const [input, setInput] = useState("");
   const avatar = useRef("avatar");
   const videoRef = useRef("video-ref");
-  const { start, stopRecording, isRecording, transcription } =
-    useAutoVoiceRecorder();
-
+  const [messages, setMessages] = useState([]);
   const createToken = async () => {
     const options = {
       method: "POST",
@@ -34,13 +31,13 @@ const InteractiveAvatar = () => {
   };
 
   const startSession = async () => {
-    const token = await createToken();
+    try{
+      const token = await createToken();
     console.log("Token Data:", token);
     avatar.current = new StreamingAvatar({
       token: token,
     });
 
-    
     avatar.current.on(StreamingEvents.STREAM_READY, (event) => {
       console.log("stream ready:", event);
       // You can display the message in the UI
@@ -50,27 +47,39 @@ const InteractiveAvatar = () => {
       };
     });
 
-
+    // Calculate Response Time
     let startTime = 0;
     let endTime = 0;
-    avatar.current.on(StreamingEvents.USER_END_MESSAGE, (event) => {
+    avatar.current.on(StreamingEvents.USER_END_MESSAGE, () => {
       startTime = Date.now();
-      console.log("Avatar start talking:", event);
     });
-
-    avatar.current.on(StreamingEvents.AVATAR_START_TALKING, (event) => {
+    avatar.current.on(StreamingEvents.AVATAR_START_TALKING, () => {
       endTime = Date.now();
       const durationMs = endTime - startTime;
       console.log(`Avatar talking duration: ${durationMs.toFixed(2)} ms`);
     });
-    
 
-  
+    // Collect All Message Data 
+    
+    let temp_avatar_messages = [];
+    avatar.current.on(StreamingEvents.AVATAR_TALKING_MESSAGE, (event) => {
+      temp_avatar_messages.push(event.detail.message);
+    });
+    avatar.current.on(StreamingEvents.AVATAR_STOP_TALKING, () => {
+      setMessages(prevMessages => [...prevMessages, {type: "avatar_talking", messages: temp_avatar_messages.join(" ")}]);
+      temp_avatar_messages = []
+    });
+    avatar.current.on(StreamingEvents.USER_TALKING_MESSAGE, (event) => {
+      setMessages(prevMessages => [...prevMessages, {type: "user_talking", messages: event.detail.message}])
+    });
 
     const sessionData = await avatar.current.createStartAvatar({
-      avatarName: "Judy_Teacher_Standing_public",
+      avatarName: "Silas_CustomerSupport_public",
       quality: AvatarQuality.Low,
       language: "english",
+      voice: {
+        voiceId: "1DgknvcSIG0FSUMS8HTI",
+      },
       knowledgeBase: `
       You are Masud. You will answer about yourself based on the following information:
       - I am a software developer specializing in web and mobile applications.
@@ -82,6 +91,9 @@ const InteractiveAvatar = () => {
     });
     setSessionId(sessionData.session_id);
     console.log("Session started:", sessionData);
+    }catch(error){
+      console.error("Error starting session:", error);
+    }
   };
 
   async function terminateAvatarSession() {
@@ -89,6 +101,7 @@ const InteractiveAvatar = () => {
     await avatar.current.stopAvatar();
     videoRef.current.srcObject = null;
     avatar.current = null;
+    console.log("Avatar session terminated.", messages);
   }
 
   const speak = async (text) => {
@@ -100,15 +113,6 @@ const InteractiveAvatar = () => {
     });
     console.log("Speak result:", result);
   };
-
-  useEffect(() => {
-    // const runSpeak = async () => {
-    //   await speak(transcription);
-    // };
-    // if (transcription && avatar.current) {
-    //   runSpeak();
-    // }
-  }, []);
 
   async function startVoiceChat() {
     if (!avatar.current) return;
