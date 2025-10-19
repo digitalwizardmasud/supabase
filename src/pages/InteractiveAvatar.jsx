@@ -38,13 +38,14 @@ const InteractiveAvatar = () => {
       token: token,
     });
 
-    avatar.current.on(StreamingEvents.STREAM_READY, (event) => {
+    avatar.current.on(StreamingEvents.STREAM_READY, async(event) => {
       console.log("stream ready:", event);
       // You can display the message in the UI
       videoRef.current.srcObject = event.detail;
       videoRef.current.onloadedmetadata = () => {
         videoRef.current.play().catch(console.error);
       };
+       setMessages([])
     });
 
     // Calculate Response Time
@@ -87,10 +88,18 @@ const InteractiveAvatar = () => {
       - I enjoy learning new technologies and improving my coding skills.
       - In my free time, I like to read tech blogs and contribute to open source projects.
       - I am passionate about building user-friendly and efficient software solutions.
+
+
+      You will stop talking immediately when user started talking
       `,
     });
     setSessionId(sessionData.session_id);
     console.log("Session started:", sessionData);
+    if(sessionData.session_id){
+      await avatar.current.startVoiceChat({
+        useSilencePrompt: false,
+      });
+    }
     }catch(error){
       console.error("Error starting session:", error);
     }
@@ -98,9 +107,9 @@ const InteractiveAvatar = () => {
 
   async function terminateAvatarSession() {
     if (!avatar.current || !sessionId) return;
-    await avatar.current.stopAvatar();
-    videoRef.current.srcObject = null;
-    avatar.current = null;
+    await avatar?.current?.stopAvatar();
+    if(avatar?.current) { avatar.current = null }
+    if(videoRef?.current) { videoRef.current.srcObject = null; }
     console.log("Avatar session terminated.", messages);
   }
 
@@ -120,6 +129,7 @@ const InteractiveAvatar = () => {
       await avatar.current.startVoiceChat({
         useSilencePrompt: false,
       });
+      // await speak()
     } catch (error) {
       console.error("Error starting voice chat:", error);
     }
@@ -148,11 +158,11 @@ const InteractiveAvatar = () => {
           className="bg-green-200 px-4 py-1 rounded cursor-pointer"
           onClick={startVoiceChat}
         >
-          Speak
+          Start Voice Chat
         </button>
         <button
           className="bg-red-200 px-4 py-1 rounded cursor-pointer"
-          onClick={terminateAvatarSession}
+          onClick={async()=>await terminateAvatarSession()}
         >
           Terminate
         </button>
